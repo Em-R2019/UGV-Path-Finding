@@ -1,49 +1,47 @@
-from operator import attrgetter
-
-import Grid
+from math import inf
 
 
 def get_path(node):
     path = []
-
     while node is not None:
-        path.append(node)
+        path.append(node.location)
         node = node.parent
+    path.reverse()
+    return path
 
-    return path.reverse()
 
+def search(grid, start, goal):
+    open_list = []
+    closed_list = []
+    current_node = grid.node(start, None)
+    open_list.append(current_node)
 
-class A_star:
-    def __init__(self, grid):
-        self.grid = Grid.Grid(grid)
-        # self.start = start
-        # self.goal = goal
-        # self.path = self.search(start, goal)
+    while len(open_list) > 0:
+        f = inf
+        for node in open_list:
+            if node.f(goal) < f:
+                current_node = node
+                f = current_node.f(goal)
 
-    def search(self, start, goal):
-        open_list = []
-        closed_list = []
-        start = self.grid.node(start, None)
-        open_list.append(start)
+        if current_node.location == goal:
+            # path, cost = get_path(current_node)
+            return get_path(current_node), current_node.g
+        else:
+            closed_list.append(current_node)
+            open_list.remove(current_node)
 
-        while len(open_list) > 0:
-            current_node = min(open_list, key=attrgetter('f.()'))
-
-            if current_node.location == goal:
-                return get_path(current_node)
-            else:
-                closed_list.append(current_node)
-                open_list.remove(current_node)
-
-            neighbours = self.grid.neighbors(current_node)
-            for candidate in neighbours:
+        neighbours = grid.neighbors(current_node)
+        for candidate in neighbours:
+            if not candidate.is_in(closed_list):
                 if not candidate.is_in(open_list):
                     open_list.append(candidate)
                 else:
                     open_node = candidate.get_eq(open_list)
-                    if open_node.g > candidate:
-                        open_node.g = candidate.g
-                        open_node.parent = candidate.parent
-                        
-        raise Exception("No path found")
+                    if open_node.g > candidate.g:
+                        # open_node.g = candidate.g
+                        # open_node.parent = candidate.parent
+                        open_list.append(candidate)
+                        open_list.remove(open_node)
+
+    raise Exception("No path found")
 
