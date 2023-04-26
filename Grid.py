@@ -107,9 +107,9 @@ class Grid:
         for i in range(self.width):
             for j in range(self.height):
                 if [i, j] in path:
-                    plt.text(i - 0.1, j + 0.1, str(self.grid[j][i]), color='w')
+                    plt.text(i - 0.1, j + 0.1, str(round(self.grid[j][i], 2)), color='w')
                 else:
-                    plt.text(i - 0.1, j + 0.1, str(self.grid[j][i]))
+                    plt.text(i - 0.1, j + 0.1, str(round(self.grid[j][i], 2)))
 
         # create a patch (proxy artist) for every color
         p = [patches.Patch(color='white', label="not accessed".format(l=0)),
