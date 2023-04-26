@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import colors
+from matplotlib import patches, colors
 
 
 def get_locations(node_list):
@@ -12,7 +12,7 @@ def get_locations(node_list):
 
 class Node:
     def __init__(self, location: [int, int], value: float, parent):
-        self.location = location    # [x,y]
+        self.location = location  # [x,y]
         self.value = value
         self.parent = parent
 
@@ -87,7 +87,7 @@ class Grid:
         closed_list = get_locations(closed_list)
         open_list = get_locations(open_list)
 
-        cmap = colors.ListedColormap(['white', 'darkgray', 'dimgray',  'black'])
+        cmap = colors.ListedColormap(['white', 'darkgray', 'dimgray', 'black'])
         bounds = [0, 5, 10, 15, 20]
         norm = colors.BoundaryNorm(bounds, cmap.N)
 
@@ -107,9 +107,16 @@ class Grid:
         for i in range(self.width):
             for j in range(self.height):
                 if [i, j] in path:
-                    plt.text(i-0.1, j+0.1, str(self.grid[j][i]), color='w')
+                    plt.text(i - 0.1, j + 0.1, str(self.grid[j][i]), color='w')
                 else:
-                    plt.text(i-0.1, j+0.1, str(self.grid[j][i]))
+                    plt.text(i - 0.1, j + 0.1, str(self.grid[j][i]))
 
+        # create a patch (proxy artist) for every color
+        p = [patches.Patch(color='white', label="not accessed".format(l=0)),
+             patches.Patch(color='darkgray', label="open list".format(l=5)),
+             patches.Patch(color='dimgray', label="closed list".format(l=10)),
+             patches.Patch(color='black', label="path".format(l=15)), ]
+
+        plt.legend(handles=p, bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0.)
+        plt.tight_layout()
         plt.show()
-
