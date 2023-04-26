@@ -24,16 +24,16 @@ if __name__ == "__main__":
         with open(os.path.join(mission_path, mission), "r") as file:
             lines = file.readlines()
 
-            trav_grid = get_array(range(1, 9), lines)
+            trav_grid = get_array(range(1, 9), lines)  # 8x8
             cover_grid = get_array(range(11, 19), lines)
             ea_grid = get_array(range(21, 29), lines)
 
-            start_position = lines[31].strip().split(", ")
+            start_position = lines[31].strip().split(", ")  # x,y
             start_position = [int(x) for x in start_position]
             OP_position = lines[34].strip().split(", ")
             OP_position = [int(x) for x in OP_position]
 
-            intent = int(lines[37].strip())
+            intent = int(lines[37].strip())  # 0-5
 
         detection_grid = np.multiply(cover_grid, ea_grid)
         detection_grid = np.multiply(detection_grid, intent)
@@ -44,4 +44,3 @@ if __name__ == "__main__":
         path, cost = search(grid, start_position, OP_position)
 
         print(f"{mission[:-4]}, total costs: {cost}, path: {path}")
-        grid.print_path(path)

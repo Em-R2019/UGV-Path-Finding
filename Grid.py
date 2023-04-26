@@ -1,11 +1,18 @@
 import numpy as np
-import copy
 import matplotlib.pyplot as plt
+from matplotlib import colors
+
+
+def get_locations(node_list):
+    location_list = []
+    for node in node_list:
+        location_list.append(node.location)
+    return location_list
 
 
 class Node:
     def __init__(self, location: [int, int], value: float, parent):
-        self.location = location
+        self.location = location    # [x,y]
         self.value = value
         self.parent = parent
 
@@ -70,13 +77,39 @@ class Grid:
             x, y = location
             return Node(location, self.grid[y][x], parent)
 
-    def print_path(self, path: []):
-        print_grid = copy.deepcopy(self.grid)
+    def print_path(self, path: [], closed_list: [], open_list: []):
+        print_grid = np.zeros_like(self.grid)
 
-        path_color = np.max(print_grid) * 1.2
-        for location in path:
-            x, y = location
-            print_grid[y][x] = path_color
+        path_color = 15
+        closed_color = 10
+        open_color = 5
 
-        plt.pcolormesh(print_grid, cmap='gist_yarg')
+        closed_list = get_locations(closed_list)
+        open_list = get_locations(open_list)
+
+        cmap = colors.ListedColormap(['white', 'darkgray', 'dimgray',  'black'])
+        bounds = [0, 5, 10, 15, 20]
+        norm = colors.BoundaryNorm(bounds, cmap.N)
+
+        # plot accessed nodes
+        for i in range(self.height):
+            for j in range(self.width):
+                if [j, i] in path:
+                    print_grid[i][j] = path_color
+                elif [j, i] in closed_list:
+                    print_grid[i][j] = closed_color
+                elif [j, i] in open_list:
+                    print_grid[i][j] = open_color
+
+        plt.imshow(print_grid, cmap=cmap, norm=norm)
+
+        # print grid values
+        for i in range(self.width):
+            for j in range(self.height):
+                if [i, j] in path:
+                    plt.text(i-0.1, j+0.1, str(self.grid[j][i]), color='w')
+                else:
+                    plt.text(i-0.1, j+0.1, str(self.grid[j][i]))
+
         plt.show()
+
