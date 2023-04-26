@@ -36,7 +36,7 @@ if __name__ == "__main__":
             intent = int(lines[37].strip())  # 0-5
 
         detection_grid = np.multiply(cover_grid, ea_grid)
-        detection_grid = np.multiply(detection_grid, intent/2.5)
+        detection_grid = np.multiply(detection_grid, intent/5)  # normalize and implement intent
         trav_grid = np.multiply(trav_grid, 5 - intent)
         combined_grid = np.add(trav_grid, detection_grid)
 

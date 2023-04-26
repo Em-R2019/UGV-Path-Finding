@@ -17,9 +17,9 @@ class Node:
         self.parent = parent
 
         if parent is not None:
-            self.g = parent.g + value
+            self.g = parent.g + value + 1
         else:
-            self.g = value
+            self.g = value + 1
 
     def h(self, goal):
         x, y = self.location
