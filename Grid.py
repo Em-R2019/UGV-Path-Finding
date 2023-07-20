@@ -76,6 +76,8 @@ class Grid:
         if self.in_bounds(location):
             x, y = location
             return Node(location, self.grid[y][x], parent)
+        else:
+            raise Exception('Node location out of bounds')
 
     def print_path(self, path: [], closed_list: [], open_list: []):
         print_grid = np.zeros_like(self.grid)
@@ -115,7 +117,7 @@ class Grid:
         p = [patches.Patch(color='white', label="not accessed".format(l=0)),
              patches.Patch(color='darkgray', label="open list".format(l=5)),
              patches.Patch(color='dimgray', label="closed list".format(l=10)),
-             patches.Patch(color='black', label="path".format(l=15)), ]
+             patches.Patch(color='black', label="path".format(l=15))]
 
         plt.legend(handles=p, bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0.)
         plt.tight_layout()
