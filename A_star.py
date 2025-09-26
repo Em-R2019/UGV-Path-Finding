@@ -31,15 +31,24 @@ def search(grid, start, t, T):
 
         # switch non-goal current node to closed list
         T_step = (datetime.now() - start_time).total_seconds() / 1000
-        t_step += 1
+        t_step = len(get_path(current_node))
         if t_step >= t or T_step >= T:
             print("Time limit reached")
             path = get_path(current_node)
             grid.print_path(path, closed_list, open_list)
-            return path, current_node.g
+            return path, current_node.g, current_node.h
         else:
             closed_list.append(current_node)
             open_list.remove(current_node)
+
+        # updating the grid to reflect visited nodes
+        grid.update_working_grid(current_node)
+
+        # update closed list
+        closed_list = [node for node in closed_list if not (node.g < current_node.g - 1)]
+        #
+        # # update open list
+        # open_list = [node for node in open_list if not (node.g < current_node.g - 15)]
 
         # evaluate neighbours of current node
         neighbours = grid.neighbors(current_node)
@@ -52,6 +61,7 @@ def search(grid, start, t, T):
                     if open_node.g > candidate.g:
                         open_list.append(candidate)
                         open_list.remove(open_node)
+
 
     print("Path limit reached")
     path = get_path(current_node)

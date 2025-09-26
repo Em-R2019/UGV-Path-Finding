@@ -20,9 +20,9 @@ class Node:
             self.g = parent.g + 1
             self.h = parent.h + value
         else:
-            self.g = 0
+            self.g = 1
             self.h = value
-        self.f = self.h - self.g
+        self.f = self.h * 2 - self.g
 
     # def h(self):
     #     if self.parent is not None:
@@ -56,9 +56,21 @@ class Node:
 class Grid:
     def __init__(self, grid: np.array([])):
         self.og_grid = grid
-        self.working_grid = grid
+        self.working_grid = grid.copy().astype(np.float32)
         self.width = grid.shape[0]
         self.height = grid.shape[1]
+
+    def update_working_grid(self, node: Node):
+        self.working_grid = self.og_grid.copy().astype(np.float32)
+        final_g = node.g
+        while node is not None:
+            x, y = node.location
+            new_value = (final_g - node.g) * .25
+            if new_value < float(self.og_grid[y][x]):
+                self.working_grid[y][x] = new_value
+            else:
+                break
+            node = node.parent
 
     def in_bounds(self, location) -> bool:
         x, y = location
@@ -79,12 +91,12 @@ class Grid:
     def node(self, location, parent):
         if self.in_bounds(location):
             x, y = location
-            return Node(location, self.working_grid[y][x], parent)
+            return Node(location, self.og_grid[y][x], parent)
         else:
             raise Exception('Node location out of bounds')
 
     def print_path(self, path, closed_list, open_list):
-        print_grid = np.zeros_like(self.working_grid)
+        print_grid = np.zeros_like(self.og_grid)
 
         path_color = 15
         closed_color = 10
@@ -107,15 +119,16 @@ class Grid:
                 elif [j, i] in open_list:
                     print_grid[i][j] = open_color
 
+        plt.figure(figsize = (self.width/3, self.height/3))
         plt.imshow(print_grid, cmap=cmap, norm=norm)
 
         # print grid values
         for i in range(self.width):
             for j in range(self.height):
                 if [i, j] in path:
-                    plt.text(i - 0.1, j + 0.1, str(round(self.working_grid[j][i], 2)), color='w')
+                    plt.text(i - 0.1, j + 0.1, str(round(self.og_grid[j][i], 2)), color='w')
                 else:
-                    plt.text(i - 0.1, j + 0.1, str(round(self.working_grid[j][i], 2)))
+                    plt.text(i - 0.1, j + 0.1, str(round(self.og_grid[j][i], 2)))
 
         # create a patch (proxy artist) for every color
         p = [patches.Patch(color='white', label="not accessed".format(l=0)),
