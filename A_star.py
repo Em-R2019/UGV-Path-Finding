@@ -1,3 +1,4 @@
+from datetime import datetime
 from math import inf
 
 
@@ -10,7 +11,10 @@ def get_path(node):
     return path
 
 
-def search(grid, start, goal):
+def search(grid, start, t, T):
+    start_time = datetime.now()
+    t_step = 0
+
     open_list = []
     closed_list = []
 
@@ -18,16 +22,18 @@ def search(grid, start, goal):
     open_list.append(current_node)
 
     while len(open_list) > 0:
-
-        # find lowest f in open list
-        f = inf
+        # find highest f in open list
+        f = -inf
         for node in open_list:
-            if node.f(goal) < f:
+            if node.f > f:
                 current_node = node
-                f = current_node.f(goal)
+                f = current_node.f
 
         # switch non-goal current node to closed list
-        if current_node.location == goal:
+        T_step = (datetime.now() - start_time).total_seconds() / 1000
+        t_step += 1
+        if t_step >= t or T_step >= T:
+            print("Time limit reached")
             path = get_path(current_node)
             grid.print_path(path, closed_list, open_list)
             return path, current_node.g
@@ -47,5 +53,9 @@ def search(grid, start, goal):
                         open_list.append(candidate)
                         open_list.remove(open_node)
 
-    raise Exception("No path found")
+    print("Path limit reached")
+    path = get_path(current_node)
+    grid.print_path(path, closed_list, open_list)
+    return path, current_node.g, current_node.h
+    # raise Exception("No path found")
 

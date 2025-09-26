@@ -17,19 +17,22 @@ class Node:
         self.parent = parent
 
         if parent is not None:
-            self.g = parent.g + value + 1
+            self.g = parent.g + 1
+            self.h = parent.h + value
         else:
-            self.g = value + 1
+            self.g = 0
+            self.h = value
+        self.f = self.h - self.g
 
-    def h(self, goal):
-        x, y = self.location
-        dx = goal[0] - x
-        dy = goal[1] - y
-        return dx ** 2 + dy ** 2
-
-    def f(self, goal):
-        h = self.h(goal)
-        return self.g + h
+    # def h(self):
+    #     if self.parent is not None:
+    #         return self.value + self.parent.value
+    #     else:
+    #         return self.value
+    #
+    # def f(self):
+    #     h = self.h()
+    #     return self.g + h
 
     def is_in(self, node_list):
         for node in node_list:
@@ -52,7 +55,8 @@ class Node:
 
 class Grid:
     def __init__(self, grid: np.array([])):
-        self.grid = grid
+        self.og_grid = grid
+        self.working_grid = grid
         self.width = grid.shape[0]
         self.height = grid.shape[1]
 
@@ -72,15 +76,15 @@ class Grid:
 
         return neighbours
 
-    def node(self, location: [int, int], parent):
+    def node(self, location, parent):
         if self.in_bounds(location):
             x, y = location
-            return Node(location, self.grid[y][x], parent)
+            return Node(location, self.working_grid[y][x], parent)
         else:
             raise Exception('Node location out of bounds')
 
-    def print_path(self, path: [], closed_list: [], open_list: []):
-        print_grid = np.zeros_like(self.grid)
+    def print_path(self, path, closed_list, open_list):
+        print_grid = np.zeros_like(self.working_grid)
 
         path_color = 15
         closed_color = 10
@@ -109,9 +113,9 @@ class Grid:
         for i in range(self.width):
             for j in range(self.height):
                 if [i, j] in path:
-                    plt.text(i - 0.1, j + 0.1, str(round(self.grid[j][i], 2)), color='w')
+                    plt.text(i - 0.1, j + 0.1, str(round(self.working_grid[j][i], 2)), color='w')
                 else:
-                    plt.text(i - 0.1, j + 0.1, str(round(self.grid[j][i], 2)))
+                    plt.text(i - 0.1, j + 0.1, str(round(self.working_grid[j][i], 2)))
 
         # create a patch (proxy artist) for every color
         p = [patches.Patch(color='white', label="not accessed".format(l=0)),
