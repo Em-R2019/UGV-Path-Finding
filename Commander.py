@@ -1,8 +1,7 @@
 import os
 import sys
 import numpy as np
-from ast import literal_eval
-from A_star import search
+from Search import search
 from Grid import Grid
 
 
@@ -10,7 +9,8 @@ if __name__ == "__main__":
     N = sys.argv[1]
     t = int(sys.argv[2])
     T = int(sys.argv[3])
-    start_position = literal_eval(sys.argv[4])
+    start_position = [int(sys.argv[4]), int(sys.argv[5])]
+    increasing = bool(sys.argv[6] == 'True')
 
     mission_path = "grids"
     missions = os.listdir(mission_path)
@@ -23,7 +23,7 @@ if __name__ == "__main__":
         for i, row in enumerate(rows):
             grid[i, :] = [int(i) for i in row.split(" ")]
 
-    grid = Grid(grid)
-    path, cost, value = search(grid, start_position, t, T)
+    grid = Grid(grid, increasing)
+    path, cost, value, time = search(grid, start_position, t, T-1)
 
-    print(f"{mission[:-4]}, total steps: {cost}, value: {value}, path: {path}")
+    print(f"Grid size:{N}, total steps: {cost}, time: {time:.1f}ms score: {value:.1f}, path: {path}")
